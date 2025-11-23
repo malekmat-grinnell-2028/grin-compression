@@ -1,5 +1,7 @@
 package edu.grinnell.csc207.compression;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,8 +26,29 @@ public class Grin {
      * @return a freqency map for the given file
      */
     public static Map<Short, Integer> createFrequencyMap (String file) {
-        // TODO: fill me in!
-        return null;
+        BitInputStream in = null;
+        try {
+            in = new BitInputStream(file);
+        } catch (IOException e) {
+            System.err.println("Failed to read file");
+            System.exit(1);
+        }
+
+        Map<Short, Integer> m = new HashMap<>();
+
+        short packet = (short) in.readBits(8);
+        while (packet != 1) {
+            if (m.containsKey(packet)) {
+                m.put(packet, m.get(packet)+1);
+            } else {
+                m.put(packet, 1);
+            }
+        }
+        
+        // case when stream is empty??
+        // return eof all the way up
+
+        return m;
     }
 
     /**
