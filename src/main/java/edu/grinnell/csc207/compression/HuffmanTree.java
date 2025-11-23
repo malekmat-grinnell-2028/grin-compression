@@ -1,6 +1,7 @@
 package edu.grinnell.csc207.compression;
 
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * A HuffmanTree derives a space-efficient coding of a collection of byte
@@ -16,12 +17,37 @@ import java.util.Map;
  */
 public class HuffmanTree {
 
+    private class Pair implements Comparable<Pair> {
+        private Short val;
+        private Integer count;
+
+        public Pair(Short val, Integer count) {
+            this.val = val;
+            this.count = count;
+        }
+
+        public int compareTo(Pair p) {
+            return count - p.getCount();
+        }
+
+        public int getCount() {
+            return count;
+        }
+    }
+
+    PriorityQueue<Pair> que;
+
     /**
      * Constructs a new HuffmanTree from a frequency map.
      * @param freqs a map from 9-bit values to frequencies.
      */
     public HuffmanTree (Map<Short, Integer> freqs) {
-        // TODO: fill me in!
+        que = new PriorityQueue<>();
+        Short[] arr = (Short[]) freqs.keySet().toArray();
+        for(int i=0; i<arr.length; i++) {
+            Pair p = new Pair(arr[i], freqs.get(arr[i]));
+            que.add(p);
+        }
     }
 
     /**
