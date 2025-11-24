@@ -36,17 +36,17 @@ public class Grin {
 
         Map<Short, Integer> m = new HashMap<>();
 
-        short packet = (short) in.readBits(8);
-        while (packet != 1) {
+        short packet;
+        while ((packet = (short) in.readBits(8)) != -1) {
             if (m.containsKey(packet)) {
                 m.put(packet, m.get(packet)+1);
             } else {
                 m.put(packet, 1);
             }
         }
-        
-        // case when stream is empty??
-        // return eof all the way up
+
+        // add EOF at end of every file
+        m.put((short) 256, 1);
 
         return m;
     }
