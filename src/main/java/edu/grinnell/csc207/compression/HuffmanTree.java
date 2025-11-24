@@ -18,14 +18,15 @@ import java.util.PriorityQueue;
 public class HuffmanTree {
 
     private class Pair implements Comparable<Pair> {
-        private Short val;
-        private Integer count;
+        private short val;
+        private int count;
 
-        public Pair(Short val, Integer count) {
+        public Pair(short val, int count) {
             this.val = val;
             this.count = count;
         }
 
+        @Override
         public int compareTo(Pair p) {
             return count - p.getCount();
         }
@@ -33,6 +34,14 @@ public class HuffmanTree {
         public int getCount() {
             return count;
         }
+    }
+
+    private static class Node {
+        private Node nodeLeft = null;
+        private Node nodeRight = null;
+        private short val;
+        private int count = 0;
+        private boolean isLeaf;
     }
 
     PriorityQueue<Pair> que;
@@ -66,7 +75,7 @@ public class HuffmanTree {
     public void serialize (BitOutputStream out) {
         // TODO: fill me in!
     }
-   
+
     /**
      * Encodes the file given as a stream of bits into a compressed format
      * using this Huffman tree. The encoded values are written, bit-by-bit
