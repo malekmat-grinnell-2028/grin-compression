@@ -74,6 +74,10 @@ public class HuffmanTree {
             que.add(n);
         }
 
+        // add eof to priority que
+        Node eof = new Node((short) 256, 1, null, null, true);
+        que.add(eof);
+
         // make tree from queue
         while (que.size() > 1) {
             Node lchild = que.poll();
@@ -148,7 +152,33 @@ public class HuffmanTree {
      * @param out the file to write the compressed output to.
      */
     public void encode(BitInputStream in, BitOutputStream out) {
-        // TODO: fill me in!
+        while(in.hasBits()) {
+            int character = in.readBits(8);
+            short bitSequence = 0;
+            encodeHelper(in, out, root, character, bitSequence);
+        }
+        // not sure if this works for adding the EOF character, but I hope it does
+        encodeHelper(in, out, root, (short) 256, (short) 0);
+    }
+
+    public void addToBitOutputStream(BitOutputStream out, short bitSequence) {
+        while(bitSequence != 0) {
+            out.writeBit(bitSequence % 2);
+            bitSequence = (short) (bitSequence >> 1);
+        }
+    }
+
+    public boolean encodeHelper(BitInputStream in, BitOutputStream out, Node n, int character, short bitSequence) {
+        if(n.isLeaf) {
+            if(character == (int) n.val) {
+                addToBitOutputStream(out, bitSequence);
+                return true;
+            }
+            return false;
+        } else {
+            return (encodeHelper(in, out, n, character,(short) (bitSequence << 1))
+                   || encodeHelper(in, out, n, character, (short) ((bitSequence << 1) + 1)));
+        }
     }
 
     /**
@@ -163,4 +193,5 @@ public class HuffmanTree {
     public void decode(BitInputStream in, BitOutputStream out) {
         // TODO: fill me in!
     }
+
 }
