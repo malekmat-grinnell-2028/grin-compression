@@ -57,6 +57,7 @@ public class HuffmanTree {
     }
 
     private PriorityQueue<Node> que;
+    private Node root;
 
     /**
      * Constructs a new HuffmanTree from a frequency map.
@@ -83,7 +84,7 @@ public class HuffmanTree {
         }
 
         // get final node in queue as root
-        Node root = que.poll();
+        root = que.poll();
     }
 
     /**
@@ -104,6 +105,19 @@ public class HuffmanTree {
     //     }
     // }
 
+    public void serializeHelper(BitOutputStream out, Node n) {
+        // if the node is a leaf, add a 0 to the stream then the bit sequence for that character
+         // if the node is not a leaf, add a 1 to the stream then recursively call the left branch and the right branch
+        if(n.isLeaf) {
+            out.writeBit(0);
+            out.writeBits(n.val, 9);
+        } else {
+            out.writeBit(1);
+            serializeHelper(out, n.left);
+            serializeHelper(out, n.left);
+        }
+    }
+
     /**
      * Writes this HuffmanTree to the given file as a stream of bits in a
      * serialized format.
@@ -111,18 +125,19 @@ public class HuffmanTree {
      * @param out the output file as a BitOutputStream
      */
     public void serialize(BitOutputStream out) {
-
+        // since the que should contain nodes
+        serializeHelper(out, root);
     }
 
-    public void serializeHelper(BitOutputStream out, Node n) {
-        if (n.isLeaf) {
-            out.writeBit(0);
-        } else {
-            out.writeBit(1);
-        }
+    // public void serializeHelper(BitOutputStream out, Node n) {
+    //     if (n.isLeaf) {
+    //         out.writeBit(0);
+    //     } else {
+    //         out.writeBit(1);
+    //     }
 
-        // write n.val
-    }
+    //     // write n.val
+    // }
 
     /**
      * Encodes the file given as a stream of bits into a compressed format
