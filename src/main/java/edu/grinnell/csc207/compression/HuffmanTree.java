@@ -56,21 +56,34 @@ public class HuffmanTree {
         }
     }
 
-    private PriorityQueue<Pair> que;
+    private PriorityQueue<Node> que;
 
     /**
      * Constructs a new HuffmanTree from a frequency map.
      * 
      * @param freqs a map from 9-bit values to frequencies.
      */
-    public HuffmanTree(Map<Short, Integer> freqs) {
+    public HuffmanTree(Map<Short, Integer> freqs) { // encoding constructor
         que = new PriorityQueue<>();
 
-        Short[] arr = (Short[]) freqs.keySet().toArray();
+        // mappings --> leaves --> add to queue
+        Short[] arr = freqs.keySet().toArray(new Short[0]);
         for (int i = 0; i < arr.length; i++) {
-            Pair p = new Pair(arr[i], freqs.get(arr[i]));
-            que.add(p);
+            Node n = new Node(arr[i], freqs.get(arr[i]), null, null, true);
+            que.add(n);
         }
+
+        // make tree from queue
+        while (que.size() > 1) {
+            Node lchild = que.poll();
+            Node rchild = que.poll();
+            // placeholder value of -1
+            Node parent = new Node((short)-1, lchild.count + rchild.count, lchild, rchild, false);
+            que.add(parent);
+        }
+
+        // get final node in queue as root
+        Node root = que.poll();
     }
 
     /**
@@ -78,9 +91,18 @@ public class HuffmanTree {
      * 
      * @param in the input file (as a BitInputStream)
      */
-    public HuffmanTree(BitInputStream in) {
-        // TODO: fill me in!
+    public HuffmanTree(BitInputStream in) { // decoding constructor
+
     }
+
+    // public void treeHelper(Pair pl, Pair pr) {
+    //     while (que.size() > 1) {
+    //         pl = que.poll();
+    //         pr = que.poll();
+    //         Node lchild = new Node(pl.val, pl.count, treeHelper(pl, pr), null, false);
+    //         Node rchild = new Node(pr.val, pr.count, null, null, false);
+    //     }
+    // }
 
     /**
      * Writes this HuffmanTree to the given file as a stream of bits in a
@@ -89,7 +111,17 @@ public class HuffmanTree {
      * @param out the output file as a BitOutputStream
      */
     public void serialize(BitOutputStream out) {
-        // TODO: fill me in!
+
+    }
+
+    public void serializeHelper(BitOutputStream out, Node n) {
+        if (n.isLeaf) {
+            out.writeBit(0);
+        } else {
+            out.writeBit(1);
+        }
+
+        // write n.val
     }
 
     /**
