@@ -1,5 +1,6 @@
 package edu.grinnell.csc207.compression;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -40,19 +41,26 @@ public class HuffmanTree {
         }
     }
 
-    private static class Node {
+    private static class Node implements Comparable<Node> {
         private Node left = null;
         private Node right = null;
         private short val;
         private int count = 0;
+        private int freq;
         private boolean isLeaf;
 
-        public Node(short val, int count, Node left, Node right, boolean isLeaf) {
+        public Node(short val, int count, int freq, Node left, Node right, boolean isLeaf) {
             this.val = val;
             this.count = count;
+            this.freq = freq;
             this.left = left;
             this.right = right;
             this.isLeaf = isLeaf;
+        }
+
+        // @Override
+        public int compareTo(Node other) {
+            return Integer.compare(this.freq, other.freq);
         }
     }
 
@@ -70,20 +78,21 @@ public class HuffmanTree {
         // mappings --> leaves --> add to queue
         Short[] arr = freqs.keySet().toArray(new Short[0]);
         for (int i = 0; i < arr.length; i++) {
-            Node n = new Node(arr[i], freqs.get(arr[i]), null, null, true);
+            int count = freqs.get(arr[i]);
+            Node n = new Node(arr[i], count, count, null, null, true);
             que.add(n);
         }
 
         // add eof to priority que
-        Node eof = new Node((short) 256, 1, null, null, true);
-        que.add(eof);
+        // Node eof = new Node((short) 256, 1, 1, null, null, true);
+        // que.add(eof);
 
         // make tree from queue
         while (que.size() > 1) {
             Node lchild = que.poll();
             Node rchild = que.poll();
             // placeholder value of -1
-            Node parent = new Node((short)-1, lchild.count + rchild.count, lchild, rchild, false);
+            Node parent = new Node((short) -1, -1, lchild.freq + rchild.freq, lchild, rchild, false);
             que.add(parent);
         }
 
@@ -100,25 +109,18 @@ public class HuffmanTree {
 
     }
 
-    // public void treeHelper(Pair pl, Pair pr) {
-    //     while (que.size() > 1) {
-    //         pl = que.poll();
-    //         pr = que.poll();
-    //         Node lchild = new Node(pl.val, pl.count, treeHelper(pl, pr), null, false);
-    //         Node rchild = new Node(pr.val, pr.count, null, null, false);
-    //     }
-    // }
-
     public void serializeHelper(BitOutputStream out, Node n) {
-        // if the node is a leaf, add a 0 to the stream then the bit sequence for that character
-         // if the node is not a leaf, add a 1 to the stream then recursively call the left branch and the right branch
-        if(n.isLeaf) {
+        // if the node is a leaf, add a 0 to the stream then the bit sequence for that
+        // character
+        // if the node is not a leaf, add a 1 to the stream then recursively call the
+        // left branch and the right branch
+        if (n.isLeaf) {
             out.writeBit(0);
             out.writeBits(n.val, 9);
         } else {
             out.writeBit(1);
             serializeHelper(out, n.left);
-            serializeHelper(out, n.left);
+            serializeHelper(out, n.right);
         }
     }
 
@@ -134,13 +136,13 @@ public class HuffmanTree {
     }
 
     // public void serializeHelper(BitOutputStream out, Node n) {
-    //     if (n.isLeaf) {
-    //         out.writeBit(0);
-    //     } else {
-    //         out.writeBit(1);
-    //     }
+    // if (n.isLeaf) {
+    // out.writeBit(0);
+    // } else {
+    // out.writeBit(1);
+    // }
 
-    //     // write n.val
+    // // write n.val
     // }
 
     /**
@@ -152,7 +154,7 @@ public class HuffmanTree {
      * @param out the file to write the compressed output to.
      */
     public void encode(BitInputStream in, BitOutputStream out) {
-        while(in.hasBits()) {
+        while (in.hasBits()) {
             int character = in.readBits(8);
             short bitSequence = 0;
             encodeHelper(in, out, root, character, bitSequence);
@@ -162,23 +164,55 @@ public class HuffmanTree {
     }
 
     public void addToBitOutputStream(BitOutputStream out, short bitSequence) {
-        while(bitSequence != 0) {
+        while (bitSequence != 0) {
             out.writeBit(bitSequence % 2);
             bitSequence = (short) (bitSequence >> 1);
         }
     }
 
     public boolean encodeHelper(BitInputStream in, BitOutputStream out, Node n, int character, short bitSequence) {
-        if(n.isLeaf) {
-            if(character == (int) n.val) {
+        if (n.isLeaf) {
+            if (character == (int) n.val) {
                 addToBitOutputStream(out, bitSequence);
                 return true;
             }
             return false;
         } else {
-            return (encodeHelper(in, out, n, character,(short) (bitSequence << 1))
-                   || encodeHelper(in, out, n, character, (short) ((bitSequence << 1) + 1)));
+            return (encodeHelper(in, out, n, character, (short) (bitSequence << 1))
+                    || encodeHelper(in, out, n, character, (short) ((bitSequence << 1) + 1)));
         }
+    }
+
+    private void getValuesHelper(HashSet<Short> set, Node n) {
+        if(n.isLeaf) {
+            set.add(n.val);
+        } else {
+            getValuesHelper(set, n.left);
+            getValuesHelper(set, n.right);
+        }
+    }
+
+    //for testing
+    public HashSet<Short> getValues() {
+        HashSet<Short> set = new HashSet<>();
+        getValuesHelper(set, root);
+        return set;
+    }
+
+    private void getCountsHelper(HashSet<Integer> set, Node n) {
+        if(n.isLeaf) {
+            set.add(n.count);
+        } else {
+            getCountsHelper(set, n.left);
+            getCountsHelper(set, n.right);
+        }
+    }
+
+    //for testing
+    public HashSet<Integer> getCounts() {
+        HashSet<Integer> set = new HashSet<>();
+        getCountsHelper(set, root);
+        return set;
     }
 
     /**
