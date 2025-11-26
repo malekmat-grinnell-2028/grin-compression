@@ -1,6 +1,5 @@
 package edu.grinnell.csc207.compression;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -83,10 +82,6 @@ public class HuffmanTree {
             que.add(n);
         }
 
-        // add eof to priority que
-        // Node eof = new Node((short) 256, 1, 1, null, null, true);
-        // que.add(eof);
-
         // make tree from queue
         while (que.size() > 1) {
             Node lchild = que.poll();
@@ -106,10 +101,33 @@ public class HuffmanTree {
      * @param in the input file (as a BitInputStream)
      */
     public HuffmanTree(BitInputStream in) { // decoding constructor
-
+        root = deserializeHelper(in);
     }
 
-    public void serializeHelper(BitOutputStream out, Node n) {
+    private Node deserializeHelper(BitInputStream in) {
+        int bit = in.readBit();
+        if (bit == 0) {
+            short val = (short) in.readBits(9);
+            return new Node(val, -1, -1, null, null, true);
+        } else {
+            Node lchild = deserializeHelper(in);
+            Node rchild = deserializeHelper(in);
+            return new Node((short) -1, -1, -1, lchild, rchild, false);
+        }
+    }
+
+    /**
+     * Writes this HuffmanTree to the given file as a stream of bits in a
+     * serialized format.
+     * 
+     * @param out the output file as a BitOutputStream
+     */
+    public void serialize(BitOutputStream out) {
+        // since the que should contain nodes
+        serializeHelper(out, root);
+    }
+
+    private void serializeHelper(BitOutputStream out, Node n) {
         // if the node is a leaf, add a 0 to the stream then the bit sequence for that
         // character
         // if the node is not a leaf, add a 1 to the stream then recursively call the
@@ -125,27 +143,6 @@ public class HuffmanTree {
     }
 
     /**
-     * Writes this HuffmanTree to the given file as a stream of bits in a
-     * serialized format.
-     * 
-     * @param out the output file as a BitOutputStream
-     */
-    public void serialize(BitOutputStream out) {
-        // since the que should contain nodes
-        serializeHelper(out, root);
-    }
-
-    // public void serializeHelper(BitOutputStream out, Node n) {
-    // if (n.isLeaf) {
-    // out.writeBit(0);
-    // } else {
-    // out.writeBit(1);
-    // }
-
-    // // write n.val
-    // }
-
-    /**
      * Encodes the file given as a stream of bits into a compressed format
      * using this Huffman tree. The encoded values are written, bit-by-bit
      * to the given BitOuputStream.
@@ -154,65 +151,7 @@ public class HuffmanTree {
      * @param out the file to write the compressed output to.
      */
     public void encode(BitInputStream in, BitOutputStream out) {
-        while (in.hasBits()) {
-            int character = in.readBits(8);
-            short bitSequence = 0;
-            encodeHelper(in, out, root, character, bitSequence);
-        }
-        // not sure if this works for adding the EOF character, but I hope it does
-        encodeHelper(in, out, root, (short) 256, (short) 0);
-    }
-
-    public void addToBitOutputStream(BitOutputStream out, short bitSequence) {
-        while (bitSequence != 0) {
-            out.writeBit(bitSequence % 2);
-            bitSequence = (short) (bitSequence >> 1);
-        }
-    }
-
-    public boolean encodeHelper(BitInputStream in, BitOutputStream out, Node n, int character, short bitSequence) {
-        if (n.isLeaf) {
-            if (character == (int) n.val) {
-                addToBitOutputStream(out, bitSequence);
-                return true;
-            }
-            return false;
-        } else {
-            return (encodeHelper(in, out, n, character, (short) (bitSequence << 1))
-                    || encodeHelper(in, out, n, character, (short) ((bitSequence << 1) + 1)));
-        }
-    }
-
-    private void getValuesHelper(HashSet<Short> set, Node n) {
-        if(n.isLeaf) {
-            set.add(n.val);
-        } else {
-            getValuesHelper(set, n.left);
-            getValuesHelper(set, n.right);
-        }
-    }
-
-    //for testing
-    public HashSet<Short> getValues() {
-        HashSet<Short> set = new HashSet<>();
-        getValuesHelper(set, root);
-        return set;
-    }
-
-    private void getCountsHelper(HashSet<Integer> set, Node n) {
-        if(n.isLeaf) {
-            set.add(n.count);
-        } else {
-            getCountsHelper(set, n.left);
-            getCountsHelper(set, n.right);
-        }
-    }
-
-    //for testing
-    public HashSet<Integer> getCounts() {
-        HashSet<Integer> set = new HashSet<>();
-        getCountsHelper(set, root);
-        return set;
+        serialize(out);
     }
 
     /**
