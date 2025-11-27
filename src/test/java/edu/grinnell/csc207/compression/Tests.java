@@ -85,19 +85,19 @@ public class Tests {
         Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
         HuffmanTree h = new HuffmanTree(m);
 
-        BitInputStream in = new BitInputStream("files/huffman-example.txt");
-        BitOutputStream encOut = new BitOutputStream("files/encoded.bin");
+        BitInputStream encIn = new BitInputStream("files/huffman-example.txt");
+        BitOutputStream encOut = new BitOutputStream("files/empty-test.txt");
 
-        h.encode(in, encOut);
-        in.close();
+        h.encode(encIn, encOut);
+        encIn.close();
         encOut.close();
 
-        BitInputStream decIn = new BitInputStream("files/encoded.bin");
-        BitOutputStream out = new BitOutputStream("files/test_output.txt");
+        BitInputStream decIn = new BitInputStream("files/empty-test.txt");
+        BitOutputStream decOut = new BitOutputStream("files/test_output.txt");
 
-        h.decode(decIn, out);
+        h.decode(decIn, decOut);
         decIn.close();
-        out.close();
+        decOut.close();
 
         Path fpathIn = Paths.get("files/huffman-example.txt");
         String s_in = Files.readString(fpathIn);
