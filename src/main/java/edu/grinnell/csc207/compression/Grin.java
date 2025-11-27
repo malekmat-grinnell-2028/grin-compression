@@ -8,6 +8,9 @@ import java.util.Map;
  * The driver for the Grin compression program.
  */
 public class Grin {
+
+    public static final int GRIN_HEADER = 0x736;
+
     /**
      * Decodes the .grin file denoted by infile and writes the output to the
      * .grin file denoted by outfile.
@@ -57,8 +60,18 @@ public class Grin {
      * @param infile the file to encode.
      * @param outfile the file to write the output to.
      */
-    public static void encode(String infile, String outfile) {
-        // TODO: fill me in!
+    public static void encode (String infile, String outfile) throws IOException {
+        BitInputStream in = new BitInputStream(infile);
+        BitOutputStream out = new BitOutputStream(outfile);
+
+        out.writeBits(GRIN_HEADER, 32);
+
+        Map<Short, Integer> map = createFrequencyMap(infile);
+        HuffmanTree h = new HuffmanTree(map);
+        h.encode(in, out);
+
+        in.close();
+        out.close();
     }
 
     /**
