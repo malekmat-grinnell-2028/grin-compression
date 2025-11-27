@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,45 +24,7 @@ public class Tests {
         Path filepath = Paths.get("files/test_output.txt");
         String s_out = Files.readString(filepath);
 
-        assertEquals("111000010011", s_out);
-    }
-
-    @Test
-    @DisplayName("Add values to Huffman Tree")
-    public void valuesInTreeTest() {
-        Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
-        HuffmanTree h = new HuffmanTree(m);
-
-        // set of values gotten from the huffman tree
-        HashSet<Short> set1 = h.getValues();
-
-        // set of values being added to the huffman tree (including eof)
-        HashSet<Short> set2 = new HashSet<>();
-        set2.add((short) 97);
-        set2.add((short)32);
-        set2.add((short)98);
-        set2.add((short)122);
-        set2.add((short)256);
-        assertEquals(set2, set1);
-    }
-
-    @Test
-    @DisplayName("counts of characters being added")
-    public void countsInTreeTest() {
-        Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
-        HuffmanTree h = new HuffmanTree(m);
-        
-        // set of values gotten from the huffman tree
-        HashSet<Integer> set1 = h.getCounts();
-
-        // set of values being added to the huffman tree (including eof)
-        HashSet<Integer> set2 = new HashSet<>();
-        set2.add(1);
-        set2.add(1);
-        set2.add(2);
-        set2.add(2);
-        set2.add(3);
-        assertEquals(set2, set1);
+        assertEquals("110001100010101000000000001111010100001000000001100001", s_out);
     }
 
     @Test
@@ -82,8 +43,16 @@ public class Tests {
 
     @Test
     @DisplayName("Build tree from empty map test")
-    public void treeFromEmptyMapTest() {
+    public void treeFromEmptyMapTest() throws IOException {
+        Map<Short, Integer> m = createFrequencyMap("files/empty-test.txt");
+        HuffmanTree h = new HuffmanTree(m);
+        BitOutputStream out_arr = new BitOutputStream("files/test_output.txt", true);
+        h.serialize(out_arr);
 
+        Path filepath = Paths.get("files/test_output.txt");
+        String s_out = Files.readString(filepath);
+
+        assertEquals("0100000000", s_out);
     }
 
     @Test
@@ -108,5 +77,34 @@ public class Tests {
     @DisplayName("Decode compressed file test")
     public void decodeTest() {
 
+    }
+
+    @Test
+    @DisplayName("Encode/decode file test")
+    public void enDecodeTest() throws IOException {
+        Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
+        HuffmanTree h = new HuffmanTree(m);
+
+        BitInputStream in = new BitInputStream("files/huffman-example.txt");
+        BitOutputStream encOut = new BitOutputStream("files/encoded.bin");
+
+        h.encode(in, encOut);
+        in.close();
+        encOut.close();
+
+        BitInputStream decIn = new BitInputStream("files/encoded.bin");
+        BitOutputStream out = new BitOutputStream("files/test_output.txt");
+
+        h.decode(decIn, out);
+        decIn.close();
+        out.close();
+
+        Path fpathIn = Paths.get("files/huffman-example.txt");
+        String s_in = Files.readString(fpathIn);
+
+        Path fpathOut = Paths.get("files/test_output.txt");
+        String s_out = Files.readString(fpathOut);
+
+        assertEquals(s_in, s_out);
     }
 }
