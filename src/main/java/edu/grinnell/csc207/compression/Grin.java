@@ -10,6 +10,9 @@ import java.util.Map;
  * The driver for the Grin compression program.
  */
 public class Grin {
+
+    public static final int GRIN_HEADER = 0x736;
+
     /**
      * Decodes the .grin file denoted by infile and writes the output to the
      * .grin file denoted by outfile.
@@ -18,14 +21,19 @@ public class Grin {
      * @throws IOException 
      */
     public static void decode (String infile, String outfile) throws IOException {
-        BitInputStream decIn = new BitInputStream(infile);
-        BitOutputStream decOut = new BitOutputStream(outfile);
+        BitInputStream in = new BitInputStream(infile);
+        BitOutputStream out = new BitOutputStream(outfile);
 
-        HuffmanTree h = new HuffmanTree(decIn);
+        int header = in.readBits(32);
+        if (header!= GRIN_HEADER) {
+            throw new IllegalArgumentException("Invalid file header: program takes .grin");
+        }
 
-        h.decode(decIn, decOut);
-        decIn.close();
-        decOut.close();
+        HuffmanTree h = new HuffmanTree(in);
+        h.decode(in, out);
+
+        in.close();
+        out.close();
     }
 
     /**
@@ -55,32 +63,10 @@ public class Grin {
             }
         }
 
-        // add EOF at end of every file
         m.put((short) 256, 1);
 
         return m;
     }
-
-    /**
-     * Encodes the given file denoted by infile and writes the output to the
-     * .grin file denoted by outfile.
-     * @param infile the file to encode.
-     * @param outfile the file to write the output to.
-     * @throws IOException 
-     */
-    public static void encode(String infile, String outfile) throws IOException {
-        Map<Short, Integer> m = createFrequencyMap(infile);
-        HuffmanTree h = new HuffmanTree(m);
-
-        BitInputStream encIn = new BitInputStream(infile);
-        BitOutputStream encOut = new BitOutputStream(outfile);
-
-        h.encode(encIn, encOut);
-
-        encIn.close();
-        encOut.close();
-    }
-
 
     private static boolean hasExtension(String path, String extension) {
         if(Files.isRegularFile(Paths.get(path))) {
@@ -88,6 +74,27 @@ public class Grin {
             return sub.equals(extension);
         }
         return false;
+    }
+  
+    /**
+     * Encodes the given file denoted by infile and writes the output to the
+     * .grin file denoted by outfile.
+     * @param infile the file to encode.
+     * @param outfile the file to write the output to.
+     * @throws IOException 
+     */
+    public static void encode (String infile, String outfile) throws IOException {
+        BitInputStream in = new BitInputStream(infile);
+        BitOutputStream out = new BitOutputStream(outfile);
+
+        out.writeBits(GRIN_HEADER, 32);
+
+        Map<Short, Integer> map = createFrequencyMap(infile);
+        HuffmanTree h = new HuffmanTree(map);
+        h.encode(in, out);
+
+        in.close();
+        out.close();
     }
 
     /**
