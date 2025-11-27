@@ -9,6 +9,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <exec.mainClass>edu.grinnell.csc207.compression.Grin</exec.mainClass>
     <!-- Make sure the release version below is consistent with your version of Java! -->
+    <arguments>code infile outfile</arguments>
+
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>

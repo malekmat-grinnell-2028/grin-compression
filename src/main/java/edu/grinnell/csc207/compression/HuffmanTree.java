@@ -196,8 +196,7 @@ public class HuffmanTree {
      * @param out the file to write the decompressed output to.
      */
     public void decode(BitInputStream in, BitOutputStream out) {
-        this.root = deserializeHelper(in);
-
+        
         Node cur = root;
         int bit;
         while ((bit = in.readBit()) != -1) {
