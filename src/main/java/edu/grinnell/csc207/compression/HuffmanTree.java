@@ -17,29 +17,6 @@ import java.util.PriorityQueue;
  */
 public class HuffmanTree {
 
-    private class Pair implements Comparable<Pair> {
-        private final short val;
-        private final int count;
-
-        public Pair(short val, int count) {
-            this.val = val;
-            this.count = count;
-        }
-
-        @Override
-        public int compareTo(Pair p) {
-            return count - p.getCount();
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public short getVal() {
-            return val;
-        }
-    }
-
     private static class Node implements Comparable<Node> {
         private Node left = null;
         private Node right = null;
@@ -93,6 +70,13 @@ public class HuffmanTree {
 
         // get final node in queue as root
         root = que.poll();
+
+        // System.err.println("EOF code = " + freqs.get(256));
+        System.out.println("HUFFMAN CONSTRUCTOR CALLED");
+
+        for (Map.Entry<Short, Integer> e : freqs.entrySet()) {
+            System.out.printf("%d -> %s%n", e.getKey(), e.getValue());
+        }
     }
 
     /**
@@ -164,7 +148,25 @@ public class HuffmanTree {
      * @param out the file to write the decompressed output to.
      */
     public void decode(BitInputStream in, BitOutputStream out) {
-        // TODO: fill me in!
+        root = deserializeHelper(in);
+        Node cur = root;
+        int bit;
+        while ((bit = in.readBit()) != -1) {
+            if (bit == 0) {
+                cur = cur.left;
+            } else {
+                cur = cur.right;
+            }
+
+            if (cur.isLeaf) {
+                if (cur.val == 256) {
+                    return;
+                }
+                out.writeBits(cur.val, 8);
+                cur = root;
+            }
+
+        }
     }
 
 }
