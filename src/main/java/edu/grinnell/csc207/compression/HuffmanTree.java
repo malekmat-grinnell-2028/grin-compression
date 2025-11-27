@@ -70,13 +70,7 @@ public class HuffmanTree {
 
         // get final node in queue as root
         root = que.poll();
-
-        // for debugging: print out frequency map
-        System.out.println("HUFFMAN CONSTRUCTOR CALLED");
-
-        for (Map.Entry<Short, Integer> e : freqs.entrySet()) {
-            System.out.printf("%d -> %s%n", e.getKey(), e.getValue());
-        }
+        
     }
 
     /**
@@ -196,8 +190,9 @@ public class HuffmanTree {
      * @param out the file to write the decompressed output to.
      */
     public void decode(BitInputStream in, BitOutputStream out) {
-        
+
         Node cur = root;
+
         int bit;
         while ((bit = in.readBit()) != -1) {
             if (bit == 0) {
@@ -206,6 +201,10 @@ public class HuffmanTree {
                 cur = cur.right;
             }
 
+            if(cur == null) {
+                return;
+            }
+            
             if (cur.isLeaf) {
                 if (cur.val == 256) {
                     return;
