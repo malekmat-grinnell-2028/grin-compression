@@ -71,7 +71,7 @@ public class HuffmanTree {
         // get final node in queue as root
         root = que.poll();
 
-        // System.err.println("EOF code = " + freqs.get(256));
+        // for debugging: print out frequency map
         System.out.println("HUFFMAN CONSTRUCTOR CALLED");
 
         for (Map.Entry<Short, Integer> e : freqs.entrySet()) {
@@ -135,8 +135,12 @@ public class HuffmanTree {
      * @param out the file to write the compressed output to.
      */
     public void encode(BitInputStream in, BitOutputStream out) {
-        serialize(out);
+        this.serialize(out);
     }
+
+    // private Map<Short, String> encodeHelper() {
+
+    // }
 
     /**
      * Decodes a stream of huffman codes from a file given as a stream of
@@ -148,7 +152,6 @@ public class HuffmanTree {
      * @param out the file to write the decompressed output to.
      */
     public void decode(BitInputStream in, BitOutputStream out) {
-        root = deserializeHelper(in);
         Node cur = root;
         int bit;
         while ((bit = in.readBit()) != -1) {
