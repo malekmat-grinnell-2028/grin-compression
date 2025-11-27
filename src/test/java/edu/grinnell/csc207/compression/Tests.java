@@ -82,10 +82,10 @@ public class Tests {
     @Test
     @DisplayName("Encode/decode file test")
     public void enDecodeTest() throws IOException {
-        Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
+        Map<Short, Integer> m = createFrequencyMap("files/single-char.txt");
         HuffmanTree h = new HuffmanTree(m);
 
-        BitInputStream encIn = new BitInputStream("files/huffman-example.txt");
+        BitInputStream encIn = new BitInputStream("files/single-char.txt");
         BitOutputStream encOut = new BitOutputStream("files/empty-test.txt");
 
         h.encode(encIn, encOut);
@@ -95,11 +95,13 @@ public class Tests {
         BitInputStream decIn = new BitInputStream("files/empty-test.txt");
         BitOutputStream decOut = new BitOutputStream("files/test_output.txt");
 
-        h.decode(decIn, decOut);
+        HuffmanTree h2 = new HuffmanTree(decIn);
+
+        h2.decode(decIn, decOut);
         decIn.close();
         decOut.close();
 
-        Path fpathIn = Paths.get("files/huffman-example.txt");
+        Path fpathIn = Paths.get("files/single-char.txt");
         String s_in = Files.readString(fpathIn);
 
         Path fpathOut = Paths.get("files/test_output.txt");
@@ -107,4 +109,24 @@ public class Tests {
 
         assertEquals(s_in, s_out);
     }
+
+    @Test
+    @DisplayName("test main")
+    public void testMain() throws IOException {
+
+        String[] args1 = {"encode", "files/single-char.txt", "files/single-char-out.grin"};
+        String[] args2 = {"decode", "files/single-char-out.grin", "files/test_output.txt"};
+     
+        Grin.main(args1);
+        Grin.main(args2);
+
+        Path fpathIn = Paths.get("files/single-char.txt");
+        String s_in = Files.readString(fpathIn);
+
+        Path fpathOut = Paths.get("files/test_output.txt");
+        String s_out = Files.readString(fpathOut);
+
+        assertEquals(s_in, s_out);
+    }
+
 }
