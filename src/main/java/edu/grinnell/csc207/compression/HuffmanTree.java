@@ -136,11 +136,55 @@ public class HuffmanTree {
      */
     public void encode(BitInputStream in, BitOutputStream out) {
         this.serialize(out);
+        Map<Short, String> codeMap = buildCodeMap();
+
+        int bits;
+        while ((bits = in.readBits(8)) != -1) {
+            String code = codeMap.get((short) bits);
+            for (int i = 0; i < code.length(); i++) {
+                if (code.charAt(i) == '0') {
+                    out.writeBit(0);
+                } else {
+                    out.writeBit(1);
+                }
+            }
+        }
+
+        String eof = codeMap.get((short) 256);
+        for (int i = 0; i < eof.length(); i++) {
+            if (eof.charAt(i) == '0') {
+                out.writeBit(0);
+            } else {
+                out.writeBit(1);
+            }
+        }
     }
 
-    // private Map<Short, String> encodeHelper() {
+    private Map<Short, String> buildCodeMap() {
+        Map<Short, String> map = new java.util.HashMap<>();
 
-    // }
+        if (root == null)
+            return map;
+        if (root.isLeaf) {
+            map.put(root.val, "0");
+            return map;
+        }
+        buildCodeMapHelper(root, "", map);
+        return map;
+    }
+
+    private void buildCodeMapHelper(Node n, String s, Map<Short, String> map) {
+        if (n == null) {
+            return;
+        }
+        if (n.isLeaf) {
+            map.put(n.val, s);
+            return;
+        }
+
+        buildCodeMapHelper(n.left, s + "0", map);
+        buildCodeMapHelper(n.right, s + "1", map);
+    }
 
     /**
      * Decodes a stream of huffman codes from a file given as a stream of
@@ -152,6 +196,8 @@ public class HuffmanTree {
      * @param out the file to write the decompressed output to.
      */
     public void decode(BitInputStream in, BitOutputStream out) {
+        this.root = deserializeHelper(in);
+
         Node cur = root;
         int bit;
         while ((bit = in.readBit()) != -1) {
