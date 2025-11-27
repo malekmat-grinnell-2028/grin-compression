@@ -17,8 +17,20 @@ public class Grin {
      * @param infile the file to decode
      * @param outfile the file to ouptut to
      */
-    public static void decode (String infile, String outfile) {
-        // TODO: fill me in!
+    public static void decode (String infile, String outfile) throws IOException {
+        BitInputStream in = new BitInputStream(infile);
+        BitOutputStream out = new BitOutputStream(outfile);
+
+        int header = in.readBits(32);
+        if (header!= GRIN_HEADER) {
+            throw new IllegalArgumentException("Invalid file header: program takes .grin");
+        }
+
+        HuffmanTree h = new HuffmanTree(in);
+        h.decode(in, out);
+
+        in.close();
+        out.close();
     }
 
     /**
@@ -48,7 +60,6 @@ public class Grin {
             }
         }
 
-        // add EOF at end of every file
         m.put((short) 256, 1);
 
         return m;
