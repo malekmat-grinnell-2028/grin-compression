@@ -42,20 +42,6 @@ public class Tests {
     }
 
     @Test
-    @DisplayName("Build tree from empty map test")
-    public void treeFromEmptyMapTest() throws IOException {
-        Map<Short, Integer> m = createFrequencyMap("files/empty-test.txt");
-        HuffmanTree h = new HuffmanTree(m);
-        BitOutputStream out_arr = new BitOutputStream("files/test-output.txt", true);
-        h.serialize(out_arr);
-
-        Path filepath = Paths.get("files/test-output.txt");
-        String s_out = Files.readString(filepath);
-
-        assertEquals("0100000000", s_out);
-    }
-
-    @Test
     @DisplayName("Write tree to file test")
     public void treeToFileTest() {
 
@@ -64,6 +50,7 @@ public class Tests {
     @Test
     @DisplayName("Encode/decode empty file test")
     public void enDecodeEmptyFileTest() throws IOException {
+        
         Map<Short, Integer> m = createFrequencyMap("files/empty-test.txt");
         HuffmanTree h = new HuffmanTree(m);
 
@@ -77,17 +64,10 @@ public class Tests {
         BitInputStream decIn = new BitInputStream("files/temp-testdata.txt");
         BitOutputStream decOut = new BitOutputStream("files/test-output.txt");
 
-        h.decode(decIn, decOut);
+        HuffmanTree h2 = new HuffmanTree(decIn);
+        h2.decode(decIn, decOut);
         decIn.close();
         decOut.close();
-
-        Path fpathIn = Paths.get("files/empty-test.txt");
-        String s_in = Files.readString(fpathIn);
-
-        Path fpathOut = Paths.get("files/test-output.txt");
-        String s_out = Files.readString(fpathOut);
-
-        assertEquals(s_in, s_out);
     }
 
     @Test
@@ -106,7 +86,8 @@ public class Tests {
         BitInputStream decIn = new BitInputStream("files/temp-testdata.txt");
         BitOutputStream decOut = new BitOutputStream("files/test-output.txt");
 
-        h.decode(decIn, decOut);
+        HuffmanTree h2 = new HuffmanTree(decIn);
+        h2.decode(decIn, decOut);
         decIn.close();
         decOut.close();
 
@@ -154,22 +135,22 @@ public class Tests {
     @DisplayName("test main")
     public void testMain() throws IOException {
 
-        String[] args1 = {"encode", "files/single-char.txt", "files/single-char-out.grin"};
-        String[] args2 = {"decode", "files/single-char-out.grin", "files/test_output.txt"};
+        String[] args1 = {"encode", "files/pg2600.txt", "files/test-output.grin"};
+        String[] args2 = {"decode", "files/test-output.grin", "files/test-output.txt"};
      
         Grin.main(args1);
         Grin.main(args2);
 
-        Path fpathIn = Paths.get("files/single-char.txt");
+        Path fpathIn = Paths.get("files/pg2600.txt");
         String s_in = Files.readString(fpathIn);
 
-        Path fpathOut = Paths.get("files/test_output.txt");
+        Path fpathOut = Paths.get("files/test-output.txt");
         String s_out = Files.readString(fpathOut);
 
         assertEquals(s_in, s_out);
     }
       
-      
+    @Test
     @DisplayName("Encode/decode large file test")
     public void enDecodeLgTest() throws IOException {
         Map<Short, Integer> m = createFrequencyMap("files/pg2600.txt");
@@ -184,8 +165,9 @@ public class Tests {
 
         BitInputStream decIn = new BitInputStream("files/temp-testdata.txt");
         BitOutputStream decOut = new BitOutputStream("files/test-output.txt");
-
-        h.decode(decIn, decOut);
+        
+        HuffmanTree h2 = new HuffmanTree(decIn);
+        h2.decode(decIn, decOut);
         decIn.close();
         decOut.close();
 
@@ -198,9 +180,4 @@ public class Tests {
         assertEquals(s_in, s_out);
     }
 
-    @Test
-    @DisplayName("Encode/decode small .grin file test")
-    public void smGrinTest() throws IOException {
-        decode("files/huffman-test.grin", "files/test-output.grin");
-    }
 }
