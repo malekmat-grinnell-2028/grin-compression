@@ -80,8 +80,8 @@ public class Tests {
     }
 
     @Test
-    @DisplayName("Encode/decode file test")
-    public void enDecodeTest() throws IOException {
+    @DisplayName("Encode/decode small file test")
+    public void enDecodeSmTest() throws IOException {
         Map<Short, Integer> m = createFrequencyMap("files/huffman-example.txt");
         HuffmanTree h = new HuffmanTree(m);
 
@@ -100,6 +100,64 @@ public class Tests {
         decOut.close();
 
         Path fpathIn = Paths.get("files/huffman-example.txt");
+        String s_in = Files.readString(fpathIn);
+
+        Path fpathOut = Paths.get("files/test_output.txt");
+        String s_out = Files.readString(fpathOut);
+
+        assertEquals(s_in, s_out);
+    }
+
+        @Test
+    @DisplayName("Encode/decode medium file test")
+    public void enDecodeMdTest() throws IOException {
+        Map<Short, Integer> m = createFrequencyMap("files/test-paragraph.txt");
+        HuffmanTree h = new HuffmanTree(m);
+
+        BitInputStream encIn = new BitInputStream("files/test-paragraph.txt");
+        BitOutputStream encOut = new BitOutputStream("files/empty-test.txt");
+
+        h.encode(encIn, encOut);
+        encIn.close();
+        encOut.close();
+
+        BitInputStream decIn = new BitInputStream("files/empty-test.txt");
+        BitOutputStream decOut = new BitOutputStream("files/test_output.txt");
+
+        h.decode(decIn, decOut);
+        decIn.close();
+        decOut.close();
+
+        Path fpathIn = Paths.get("files/test-paragraph.txt");
+        String s_in = Files.readString(fpathIn);
+
+        Path fpathOut = Paths.get("files/test_output.txt");
+        String s_out = Files.readString(fpathOut);
+
+        assertEquals(s_in, s_out);
+    }
+
+        @Test
+    @DisplayName("Encode/decode large file test")
+    public void enDecodeLgTest() throws IOException {
+        Map<Short, Integer> m = createFrequencyMap("files/pg2600.txt");
+        HuffmanTree h = new HuffmanTree(m);
+
+        BitInputStream encIn = new BitInputStream("files/pg2600.txt");
+        BitOutputStream encOut = new BitOutputStream("files/empty-test.txt");
+
+        h.encode(encIn, encOut);
+        encIn.close();
+        encOut.close();
+
+        BitInputStream decIn = new BitInputStream("files/empty-test.txt");
+        BitOutputStream decOut = new BitOutputStream("files/test_output.txt");
+
+        h.decode(decIn, decOut);
+        decIn.close();
+        decOut.close();
+
+        Path fpathIn = Paths.get("files/pg2600.txt");
         String s_in = Files.readString(fpathIn);
 
         Path fpathOut = Paths.get("files/test_output.txt");
