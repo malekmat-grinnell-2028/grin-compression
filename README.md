@@ -16,6 +16,7 @@ e.i - mvn exec:java -Dexec.mainClass="edu.grinnell.csc207.compression.Grin" -Dex
 
 *   Java version 17
 *   Java API Documentation
+*   w3schools.com
 
 ## Revision Log
 
