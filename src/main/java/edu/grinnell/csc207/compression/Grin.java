@@ -68,13 +68,13 @@ public class Grin {
         return m;
     }
 
-    private static boolean hasExtension(String path, String extension) {
-        if(Files.isRegularFile(Paths.get(path))) {
-            String sub = path.substring(path.length()-extension.length(), path.length());
-            return sub.equals(extension);
-        }
-        return false;
-    }
+    // private static boolean hasExtension(String path, String extension) {
+    //     if(Files.isRegularFile(Paths.get(path))) {
+    //         String sub = path.substring(path.length()-extension.length(), path.length());
+    //         return sub.equals(extension);
+    //     }
+    //     return false;
+    // }
   
     /**
      * Encodes the given file denoted by infile and writes the output to the
@@ -110,9 +110,9 @@ public class Grin {
                 throw new IOException("Too many arguments, Usage: java Grin <encode|decode> <infile> <outfile>");
             }
             
-        } else if(args[0].equals("encode") && (hasExtension(args[1], "txt") && (hasExtension(args[2], "grin")))) {
+        } else if(args[0].equals("encode")) {
             encode(args[1], args[2]);
-        } else if((args[0].equals("decode")) && (hasExtension(args[1], "grin") && (hasExtension(args[2], "txt")))) {
+        } else if(args[0].equals("decode")) {
             decode(args[1], args[2]);
         } else {
             throw new IOException("Usage: java Grin <encode|decode> <infile> <outfile>");
