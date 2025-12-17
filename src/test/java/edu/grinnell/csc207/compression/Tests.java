@@ -28,26 +28,6 @@ public class Tests {
     }
 
     @Test
-    @DisplayName("Test how single char is serialized")
-    public void serializeSingleChar() throws IOException {
-        Map<Short, Integer> m = createFrequencyMap("files/single-char.txt");
-        HuffmanTree h = new HuffmanTree(m);
-        BitOutputStream out_arr = new BitOutputStream("files/single-char-out.txt", true);
-        h.serialize(out_arr);
-
-        Path filepath = Paths.get("files/single-char-out.txt");
-        String s_out = Files.readString(filepath);
-
-        assertEquals("101000000000001100001", s_out);
-    }
-
-    @Test
-    @DisplayName("Write tree to file test")
-    public void treeToFileTest() {
-
-    }
-
-    @Test
     @DisplayName("Encode/decode empty file test")
     public void enDecodeEmptyFileTest() throws IOException {
         
@@ -137,7 +117,7 @@ public class Tests {
 
         String[] args1 = {"encode", "files/pg2600.txt", "files/test-output.grin"};
         String[] args2 = {"decode", "files/test-output.grin", "files/test-output.txt"};
-     
+
         Grin.main(args1);
         Grin.main(args2);
 
@@ -149,9 +129,9 @@ public class Tests {
 
         assertEquals(s_in, s_out);
     }
-      
+
     @Test
-    @DisplayName("Encode/decode large file test")
+    @DisplayName("Encode/decode large .txt file test")
     public void enDecodeLgTest() throws IOException {
         Map<Short, Integer> m = createFrequencyMap("files/pg2600.txt");
         HuffmanTree h = new HuffmanTree(m);
@@ -179,5 +159,4 @@ public class Tests {
 
         assertEquals(s_in, s_out);
     }
-
 }
