@@ -48,8 +48,7 @@ public class Grin {
         try {
             in = new BitInputStream(file);
         } catch (IOException e) {
-            System.err.println("Failed to read file");
-            System.exit(1);
+            throw new RuntimeException("Failed to read file", e);
         }
 
         Map<Short, Integer> m = new HashMap<>();
