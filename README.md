@@ -20,6 +20,51 @@ e.i - mvn exec:java -Dexec.mainClass="edu.grinnell.csc207.compression.Grin" -Dex
 
 ## Revision Log
 
+commit 2835ad59cd773167cebd67e98dbdaf6483db429b (HEAD -> main)
+Author: Z Schwab <zbajraktarischwab@gmail.com>
+Date:   Wed Dec 17 12:52:32 2025 -0600
+
+    fixed style for autograder
+
+commit c13a8d5c0c0108db972b8993c98af44f25318bd2 (origin/main, origin/HEAD)
+Author: Z Schwab <zbajraktarischwab@gmail.com>
+Date:   Wed Dec 17 12:32:37 2025 -0600
+
+    fixed tests to not use deleted methods/files
+
+commit 704aada9f6fb0f75c6b60f881051499cdedb17a7
+Author: Z Schwab <zbajraktarischwab@gmail.com>
+Date:   Wed Dec 17 12:25:32 2025 -0600
+
+    fixed main error handling, deleted unecessary hasExtension error handling method
+
+commit 5a618d5bc7278714b8603dcc276af9f73c70e92c
+Author: Z Schwab <zbajraktarischwab@gmail.com>
+Date:   Wed Dec 17 11:48:40 2025 -0600
+
+    fixed error handling to exception instead of system exit to fix mvn build crash
+
+commit cb7fa5f0b33876c2f55bd73129e11623abd7e7d5
+Author: malekmat-grinnell-2028 <malekmat@grinnell.edu>
+Date:   Thu Nov 27 17:05:52 2025 -0600
+
+    Update README.md
+
+commit 89d5c18d900e7d3fa1db219dd1655134a511ef37
+Merge: b67428d 58aaad3
+Author: malekmat-grinnell-2028 <malekmat@grinnell.edu>
+Date:   Thu Nov 27 17:03:37 2025 -0600
+
+    Merge pull request #3 from malekmat-grinnell-2028/HuffmanTree-M
+    
+    fixed some tests and finalized readme
+
+commit 58aaad34d4119e7c99c9a9563f65fece9c3ebf8a
+Author: matt <malekmat@grinnell.edu>
+Date:   Thu Nov 27 17:02:14 2025 -0600
+
+    fixed some tests and finalized readme
+
 commit b67428dd061316fbab42d8788f005df54eb672db (HEAD, origin/main, origin/HEAD, HuffmanTree-M)
 Merge: 1aa2c97 724a01f
 Author: malekmat-grinnell-2028 <malekmat@grinnell.edu>
