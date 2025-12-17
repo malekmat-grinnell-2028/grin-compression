@@ -64,13 +64,14 @@ public class HuffmanTree {
             Node lchild = que.poll();
             Node rchild = que.poll();
             // placeholder value of -1
-            Node parent = new Node((short) -1, -1, lchild.freq + rchild.freq, lchild, rchild, false);
+            Node parent = new Node((short) -1, -1, lchild.freq + rchild.freq,
+                    lchild, rchild, false);
             que.add(parent);
         }
 
         // get final node in queue as root
         root = que.poll();
-        
+
     }
 
     /**
@@ -157,8 +158,9 @@ public class HuffmanTree {
     private Map<Short, String> buildCodeMap() {
         Map<Short, String> map = new java.util.HashMap<>();
 
-        if (root == null)
+        if (root == null) {
             return map;
+        }
         if (root.isLeaf) {
             map.put(root.val, "0");
             return map;
@@ -201,10 +203,10 @@ public class HuffmanTree {
                 cur = cur.right;
             }
 
-            if(cur == null) {
+            if (cur == null) {
                 return;
             }
-            
+
             if (cur.isLeaf) {
                 if (cur.val == 256) {
                     return;
@@ -215,5 +217,4 @@ public class HuffmanTree {
 
         }
     }
-
 }
